@@ -10,7 +10,9 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 app = FastAPI() 
 
-bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# bcrypt puro tem limite de 72 bytes e pode dar problemas dependendo da combinação de libs.
+# bcrypt_sha256 pré-hasha a senha e evita esse limite, mantendo suporte a "bcrypt" antigo.
+bcrypt_context = CryptContext(schemes=["bcrypt_sha256", "bcrypt"], deprecated="auto")
 
 from auth_routes import auth_router
 from order_routes import order_router
