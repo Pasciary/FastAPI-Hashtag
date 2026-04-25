@@ -45,8 +45,9 @@ def verificar_token(token, session: Session = Depends(pegar_sessao)):
     Returns:
         Usuario | None: Usuário encontrado (ou None).
     """
+    #verificar se o token é valido.
+    #extrair o id do usuario valido.
     usuario = session.query(Usuario).filter(Usuario.id==1).first
-
     return usuario
 
 
@@ -120,7 +121,6 @@ async def criar_conta(usuario_schema:UsuarioSchema, session:Session = Depends(pe
 @auth_router.post("/login")
 async def login(login_schema: LoginSchema, session:Session = Depends(pegar_sessao)):
     """Autentica o usuário e retorna tokens de acesso e refresh.
-
     Args:
         login_schema: Credenciais de login (e-mail e senha).
         session: Sessão do SQLAlchemy injetada via dependência.
@@ -157,7 +157,9 @@ async def use_refresh_token(token): # Esta com erro nessa parte, pois toda hora 
     Returns:
         dict: Novo `acess_token` e `token_type`.
     """
+
     usuario = verificar_token(token)
+
     acess_token = criar_token(usuario.id)
     return {
             "acess_token": acess_token,
