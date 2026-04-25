@@ -6,6 +6,7 @@ expõe configurações utilizadas por outros módulos (ex.: autenticação e rot
 
 from typing_extensions import deprecated
 from fastapi import FastAPI
+from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from dotenv import load_dotenv
 import os
@@ -22,6 +23,7 @@ app = FastAPI()
 # bcrypt puro tem limite de 72 bytes e pode dar problemas dependendo da combinação de libs.
 # bcrypt_sha256 pré-hasha a senha e evita esse limite, mantendo suporte a "bcrypt" antigo.
 bcrypt_context = CryptContext(schemes=["bcrypt_sha256", "bcrypt"], deprecated="auto")
+oauth2_schema = OAuth2PasswordBearer(tokenUrl='auth/login-form')
 
 from auth_routes import auth_router
 from order_routes import order_router
