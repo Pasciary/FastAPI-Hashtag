@@ -1,3 +1,9 @@
+"""Aplicação FastAPI e configurações globais.
+
+Este módulo inicializa a aplicação FastAPI, carrega variáveis de ambiente e
+expõe configurações utilizadas por outros módulos (ex.: autenticação e rotas).
+"""
+
 from typing_extensions import deprecated
 from fastapi import FastAPI
 from passlib.context import CryptContext
@@ -6,7 +12,10 @@ import os
 
 load_dotenv()
 
+ALGORITHM = os.getenv("ALGORITHM")
 SECRET_KEY = os.getenv("SECRET_KEY")
+ACESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACESS_TOKEN_EXPIRE_MINUTES"))
+REFRESH_TOKEN_EXPIRE_MINUTES = int(os.getenv("REFRESH_TOKEN_EXPIRE_MINUTES"))
 
 app = FastAPI() 
 

@@ -1,3 +1,9 @@
+"""Modelos e configuração do banco de dados.
+
+Contém a configuração do engine SQLAlchemy e os modelos ORM que representam as
+entidades persistidas no banco de dados.
+"""
+
 from typing import Any
 
 
@@ -23,6 +29,7 @@ Base = declarative_base()
 
 # 3 - criar as classes/tabelas do banco de dados.
 class Usuario(Base):
+    """Modelo ORM para usuários do sistema."""
     __tablename__ = "usuarios"
 
     id = Column("id", Integer, primary_key= True, autoincrement= True)
@@ -33,6 +40,15 @@ class Usuario(Base):
     admin = Column("admin", Boolean, default= False)
 
     def __init__(self, nome, email, senha, ativo=True, admin=False):
+        """Inicializa um usuário.
+
+        Args:
+            nome: Nome do usuário.
+            email: E-mail do usuário.
+            senha: Senha (preferencialmente já criptografada ao persistir).
+            ativo: Flag indicando se o usuário está ativo.
+            admin: Flag indicando se o usuário possui permissões de administrador.
+        """
         self.nome = nome
         self.email = email
         self.senha = senha
@@ -41,6 +57,7 @@ class Usuario(Base):
 
 
 class Pedido(Base):
+    """Modelo ORM para pedidos realizados por usuários."""
     __tablename__ = "pedidos"
 
     # STATUS_PEDIDO = [
@@ -56,12 +73,20 @@ class Pedido(Base):
     # itens =
 
     def __init__(self, usuario, status="pendente", preco=0.0):
+        """Inicializa um pedido.
+
+        Args:
+            usuario: ID do usuário associado ao pedido.
+            status: Status textual do pedido.
+            preco: Preço total do pedido.
+        """
         self.usuario = usuario
         self.status = status
         self.preco = preco
 
 
 class ItemPedido(Base):
+    """Modelo ORM para itens associados a um pedido."""
     __tablename__ = "itens_pedido"
 
     id = Column("id", Integer, primary_key= True, autoincrement= True)
@@ -72,6 +97,15 @@ class ItemPedido(Base):
     pedido = Column("pedido", ForeignKey("pedidos.id"))
 
     def __init__(self, quantidade, sabor, tamanho, preco_unitario, pedido):
+        """Inicializa um item de pedido.
+
+        Args:
+            quantidade: Quantidade do item.
+            sabor: Sabor/descrição do item.
+            tamanho: Tamanho do item.
+            preco_unitario: Preço unitário do item.
+            pedido: ID do pedido ao qual o item pertence.
+        """
         self.quantidade = quantidade
         self.sabor = sabor
         self.tamanho = tamanho
