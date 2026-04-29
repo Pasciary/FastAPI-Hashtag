@@ -60,12 +60,6 @@ class Pedido(Base):
     """Modelo ORM para pedidos realizados por usuários."""
     __tablename__ = "pedidos"
 
-    # STATUS_PEDIDO = [
-    #     ("PENDENTE", "PENDENTE"),
-    #     ("CANCELADO", "CANCELADO"),
-    #     ("FINALIZADO", "FINALIZADO"),
-    # ]
-
     id = Column("id", Integer, primary_key= True, autoincrement= True)
     status = Column("status", String) #pendente, cancelado, finalizado
     usuario = Column("usuario", ForeignKey("usuarios.id"))
