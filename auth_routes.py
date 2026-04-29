@@ -65,18 +65,6 @@ async def home():
 
 @auth_router.post("/criar-conta")
 async def criar_conta(usuario_schema:UsuarioSchema, session:Session = Depends(pegar_sessao)):
-    """Cria um novo usuário caso o e-mail ainda não esteja cadastrado.
-
-    Args:
-        usuario_schema: Dados do usuário a ser criado.
-        session: Sessão do SQLAlchemy injetada via dependência.
-
-    Raises:
-        HTTPException: Se o e-mail já estiver cadastrado ou se a senha não puder ser criptografada.
-
-    Returns:
-        dict: Mensagem de sucesso com o e-mail cadastrado.
-    """
     usuario = session.query(Usuario).filter(Usuario.email==usuario_schema.email).first() # Faz busca na tabela usuário
     if usuario:
         # Já existe um usuário com esse email.
