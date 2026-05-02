@@ -1,6 +1,6 @@
 """Esquemas Pydantic (DTOs) da API.
 
-Define modelos de entrada/saída usados nas rotas para validação e serialização
+Define modelos de entrada usados nas rotas para validação e serialização
 de dados.
 """
 
