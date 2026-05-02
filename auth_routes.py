@@ -131,7 +131,7 @@ async def login_form(dados_formulario: OAuth2PasswordRequestForm = Depends(), se
     Returns:
         dict: `acess_token`, `refresh_token` e `token_type`.
     """
-    usuario = autenticar_usuario(dados_formulario.usernmame, dados_formulario.password, session)
+    usuario = autenticar_usuario(dados_formulario.username, dados_formulario.password, session)
     if not usuario:
         raise HTTPException(status_code=400, detail="Usuário não encontrado ou credenciais invalidas.")
 
