@@ -20,7 +20,7 @@ def pegar_sessao():
     """
     try:
         Session = sessionmaker(bind=db) # Criando conexão
-        session = Session() # Criando uma instancia de sessão
+        session = Session()  # Criando uma instância de sessão
 
         yield session
         
@@ -29,29 +29,26 @@ def pegar_sessao():
 
 
 def verificar_token(token: str = Depends(oauth2_schema), session: Session = Depends(pegar_sessao)):
-    """Obtém o usuário associado ao token informado.
-
-    Nota: a implementação atual não decodifica o JWT; ela consulta um usuário
-    fixo no banco. Mantido assim para não alterar o comportamento existente.
+    """Obtém o usuário associado ao JWT Bearer enviado no header Authorization.
 
     Args:
-        token: Token JWT recebido (não utilizado na implementação atual).
+        token: JWT (sem o prefixo "Bearer ").
         session: Sessão do SQLAlchemy injetada via dependência.
 
     Returns:
         Usuario | None: Usuário encontrado (ou None).
     """
     try:
-        dic_info = jwt.decode(token, SECRET_KEY, ALGORITHM)
+        dic_info = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
 
-        id_usuario = dic_info.get("sub") # com o get só não vai dar erro, vai trazer nada.
+        id_usuario = int(dic_info["sub"])
 
-    except JWTError:
+    except (JWTError, KeyError, TypeError, ValueError):
         raise HTTPException(status_code=401, detail='Acesso Negado, Verifique a Validade do TOKEN')
 
-    usuario = session.query(Usuario).filter(Usuario.id==id_usuario).first
-    
+    usuario = session.query(Usuario).filter(Usuario.id == id_usuario).first()
+
     if not usuario:
-        raise HTTPException(status_code=401, detail='Acesso Invalido.')
+        raise HTTPException(status_code=401, detail='Acesso inválido.')
 
     return usuario

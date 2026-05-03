@@ -50,7 +50,7 @@ async def cancelar_pedido(id_pedido:int, session: Session = Depends(pegar_sessao
     pedido.status = "CANCELADO"
     session.commit()
     return{
-        "mensagem": f"Pedido numero:{pedido.id} cancelado com suscesso",
+        "mensagem": f"Pedido nº {pedido.id} cancelado com sucesso",
         "pedido": pedido
     }
 
@@ -70,7 +70,7 @@ async def listar_pedido(session: Session = Depends(pegar_sessao), usuario: Usuar
 @order_router.post("/pedido/adicionar-iten/{id_pedido}")
 async def adicionar_iten_pedido(id_pedido:int, item_pedido_schema:ItemPedidoSchema, session:Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
     
-    pedido = session.query(Pedido).filter(Pedido.id==id_pedido).firt()
+    pedido = session.query(Pedido).filter(Pedido.id == id_pedido).first()
     if not pedido:
         raise HTTPException(status_code=400, detail="Pedido não existe ou não encontrado")
     if not usuario.admin or usuario.id != pedido.usuario:
@@ -92,11 +92,12 @@ async def adicionar_iten_pedido(id_pedido:int, item_pedido_schema:ItemPedidoSche
 @order_router.post("/pedido/remover-iten/{id_item_pedido}")
 async def remover_iten_pedido(id_item_pedido:int, item_pedido_schema:ItemPedidoSchema, session:Session = Depends(pegar_sessao), usuario: Usuario = Depends(verificar_token)):
     
-    item_pedido = session.query(ItemPedido).filter(Pedido.id==id_item_pedido).firt()
-    pedido = session.query(Pedido).filter(Pedido.id==item_pedido.pedido).first()
-
+    item_pedido = session.query(ItemPedido).filter(ItemPedido.id == id_item_pedido).first()
     if not item_pedido:
         raise HTTPException(status_code=400, detail="Item não existe ou não encontrado")
+    pedido = session.query(Pedido).filter(Pedido.id == item_pedido.pedido).first()
+    if not pedido:
+        raise HTTPException(status_code=400, detail="Pedido não encontrado")
     if not usuario.admin or usuario.id != pedido.usuario:
         raise HTTPException(status_code=401, detail="Você não tem autorização para fazer essa operação")
 
@@ -125,7 +126,7 @@ async def finalizar_pedido(id_pedido:int, session: Session = Depends(pegar_sessa
     pedido.status = "FINALIZADO"
     session.commit()
     return{
-        "mensagem": f"Pedido numero:{pedido.id} finalizado com suscesso",
+        "mensagem": f"Pedido nº {pedido.id} finalizado com sucesso",
         "pedido": pedido
     }
 

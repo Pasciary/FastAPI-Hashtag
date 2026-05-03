@@ -37,10 +37,12 @@ class LoginSchema(BaseModel):
 
 
 class ItemPedidoSchema(BaseModel):
-        quantidade: int
-        sabor: str
-        tamanho: str
-        preco_unitario: float
+    """Schema para inclusão/atualização de item de pedido via API."""
 
-        class Config:
-            from_attributes = True
+    quantidade: int
+    sabor: str
+    tamanho: str
+    preco_unitario: float
+
+    class Config:
+        from_attributes = True

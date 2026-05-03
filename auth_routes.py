@@ -30,7 +30,7 @@ def criar_token(id_usuario, duracao_token=timedelta(minutes=ACESS_TOKEN_EXPIRE_M
 
     data_expiracao = datetime.now(timezone.utc) + duracao_token # Definição de data
     dic_info = {"sub": str(id_usuario), "exp": data_expiracao}
-    jwt_codificado = jwt.encode(dic_info, SECRET_KEY, ALGORITHM) # geração do token
+    jwt_codificado = jwt.encode(dic_info, SECRET_KEY, algorithm=ALGORITHM)
 
     return jwt_codificado
 
@@ -105,16 +105,16 @@ async def login(login_schema: LoginSchema, session:Session = Depends(pegar_sessa
     """
     usuario = autenticar_usuario(login_schema.email, login_schema.senha, session)
     if not usuario:
-        raise HTTPException(status_code=400, detail="Usuário não encontrado ou credenciais invalidas.")
+        raise HTTPException(status_code=400, detail="Usuário não encontrado ou credenciais inválidas.")
 
     else:
         acess_token = criar_token(usuario.id) 
         refresh_token = criar_token(usuario.id, duracao_token=timedelta(days=REFRESH_TOKEN_EXPIRE_MINUTES)) 
-        # JWT é do tipo Bearer, sendo Headers = {"Acess-Token": "Bearer {Token}"}
+        # `access_token` é o nome exigido pelo OAuth2 / Swagger UI; `acess_token` mantém compat.
         return {
-            "acess_token": acess_token,
+            "access_token": acess_token,
             "refresh_token": refresh_token,
-            "token_type": "Bearer"
+            "token_type": "Bearer",
         }
 
 
@@ -133,19 +133,20 @@ async def login_form(dados_formulario: OAuth2PasswordRequestForm = Depends(), se
     """
     usuario = autenticar_usuario(dados_formulario.username, dados_formulario.password, session)
     if not usuario:
-        raise HTTPException(status_code=400, detail="Usuário não encontrado ou credenciais invalidas.")
+        raise HTTPException(status_code=400, detail="Usuário não encontrado ou credenciais inválidas.")
 
     else:
-        acess_token = criar_token(usuario.id) 
-        # JWT é do tipo Bearer, sendo Headers = {"Acess-Token": "Bearer {Token}"}
+        acess_token = criar_token(usuario.id)
+        refresh_token = criar_token(usuario.id, duracao_token=timedelta(days=REFRESH_TOKEN_EXPIRE_MINUTES))
         return {
-            "acess_token": acess_token,
-            "token_type": "Bearer"
+            "access_token": acess_token,
+            "refresh_token": refresh_token,
+            "token_type": "Bearer",
         }
 
 
 @auth_router.get("/refresh")
-async def use_refresh_token(usuario: Usuario = Depends(verificar_token)): # Esta com erro nessa parte, pois toda hora usa o session, menos essa, ele usa indiretamente.
+async def use_refresh_token(usuario: Usuario = Depends(verificar_token)):  # Está com erro aqui: nas outras rotas usa session explícito; aqui usa indiretamente.
     """Gera um novo access token a partir de um token informado.
 
     Args:
@@ -157,6 +158,6 @@ async def use_refresh_token(usuario: Usuario = Depends(verificar_token)): # Esta
 
     acess_token = criar_token(usuario.id)
     return {
-            "acess_token": acess_token,
-            "token_type": "Bearer"
-        }
+        "access_token": acess_token,
+        "token_type": "Bearer",
+    }

@@ -64,7 +64,7 @@ class Pedido(Base):
     status = Column("status", String) #pendente, cancelado, finalizado
     usuario = Column("usuario", ForeignKey("usuarios.id"))
     preco = Column("preco", Float)
-    itens = relationship("ItemPedido", cascade="all, delete") # caso use o cascade, se eu deletar o pedido, vai deletar os itens que são estrangeiro.
+    itens = relationship("ItemPedido", cascade="all, delete")  # cascade: ao excluir o pedido, remove os itens ligados pela FK.
 
     def __init__(self, usuario, status="pendente", preco=0.0):
         """Inicializa um pedido.
@@ -81,10 +81,10 @@ class Pedido(Base):
 
     def calcular_preco(self):
         #percorrer todos os itens do pedido
-        #somar todos os precos de todos os itens 
+        # somar os preços de todos os itens
         #editar no campo preco o valor final do preco do pedido
 
-        #sem listcompreenshion
+        # sem list comprehension
         # preco_pedido = 0
         # for item in self.itens:
         #     preco_item = item.preco_unitario * item.quantidade
